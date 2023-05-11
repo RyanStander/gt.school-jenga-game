@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ApiInterpretation;
 using Cinemachine;
+using Ui;
 using UnityEngine;
 
 namespace Jenga
@@ -48,6 +49,9 @@ namespace Jenga
             CreateJengaTower(apiInterpreter.SeventhGradeStandards);
 
             CreateJengaTower(apiInterpreter.EighthGradeStandards);
+            
+            _camera.Follow = _jengaTowers[1].transform;
+            _camera.LookAt = _jengaTowers[1].transform;
         }
 
         private void CreateJengaTower(List<Standard> standards)
@@ -106,14 +110,17 @@ namespace Jenga
                         case 0:
                             jengaBlock = Instantiate(_jengaBlockGlass, jengaSet.transform);
                             jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
+                            jengaBlock.AddComponent<JengaBlockData>().SetStandard(standard);
                             break;
                         case 1:
                             jengaBlock = Instantiate(_jengaBlockWood, jengaSet.transform);
                             jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
+                            jengaBlock.AddComponent<JengaBlockData>().SetStandard(standard);
                             break;
                         case 2:
                             jengaBlock = Instantiate(_jengaBlockStone, jengaSet.transform);
                             jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
+                            jengaBlock.AddComponent<JengaBlockData>().SetStandard(standard);
                             break;
                     }
 
