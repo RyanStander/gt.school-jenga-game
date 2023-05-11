@@ -9,10 +9,15 @@ namespace Jenga
         [SerializeField] private GameObject _jengaBlockGlass;
         [SerializeField] private GameObject _jengaBlockWood;
         [SerializeField] private GameObject _jengaBlockStone;
+        [SerializeField] private GameObject _helveticaTextPrefab;
 
         [SerializeField] private float _newJengaSetHeight = 0.25f;
         [SerializeField] private float _JengaSetZPoint = 0.6f;
         [SerializeField] private float _newJengaTowerPoint = 5;
+        [SerializeField] private float _helveticaXOffset = -0.5f;
+        [SerializeField] private float _helveticaZOffset = -2;
+        [SerializeField] private float _helveticaScale = 0.02f;
+        
 
         private float currentJengaSetHeight;
         private float currentJengaSetRotation;
@@ -40,6 +45,13 @@ namespace Jenga
             {
                 standardsQueue.Enqueue(standard);
             }
+
+            GameObject helveticaText = Instantiate(_helveticaTextPrefab);
+            helveticaText.transform.position= new Vector3(currentJengaTowerPoint+_helveticaXOffset, 0, _helveticaZOffset);
+            helveticaText.transform.localScale *= _helveticaScale;
+            var text = helveticaText.GetComponent<SimpleHelvetica>();
+            text.Text = standards[0].Grade;
+            text.GenerateText();
 
             GameObject jengaTower = new GameObject( standards[0].Grade+" Jenga Tower")
             {

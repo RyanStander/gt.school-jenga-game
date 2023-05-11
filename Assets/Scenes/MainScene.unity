@@ -155,9 +155,13 @@ MonoBehaviour:
   _jengaBlockGlass: {fileID: 5088903009948328738, guid: ad3a48c531b960d4c99685062149bbfa, type: 3}
   _jengaBlockWood: {fileID: 4201551134260582055, guid: cd1e84ab787777b4d866c9737135d4d3, type: 3}
   _jengaBlockStone: {fileID: 7975974597731818447, guid: d78d925189405a847988fc61933dc029, type: 3}
+  _helveticaTextPrefab: {fileID: 100218, guid: ce72191ecb9a24885b5711cd938314a3, type: 3}
   _newJengaSetHeight: 0.25
   _JengaSetZPoint: 0.6
   _newJengaTowerPoint: 3
+  _helveticaXOffset: -1
+  _helveticaZOffset: -2
+  _helveticaScale: 0.02
 --- !u!4 &146082051
 Transform:
   m_ObjectHideFlags: 0
