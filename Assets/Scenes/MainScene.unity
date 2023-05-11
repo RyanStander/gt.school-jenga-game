@@ -475,7 +475,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.067946315, y: -7.0890068e-15, z: 4.827876e-16, w: 0.997689}
+  m_LocalRotation: {x: 0.06794629, y: 0.000000029733446, z: -0.000000002024957, w: 0.997689}
   m_LocalPosition: {x: 0, y: 1.3, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -527,6 +527,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1909556087}
   - component: {fileID: 1909556086}
+  - component: {fileID: 1909556088}
   m_Layer: 0
   m_Name: OrbitalCamera
   m_TagString: Untagged
@@ -579,7 +580,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1909556085}
-  m_LocalRotation: {x: 0.067946315, y: -7.0890068e-15, z: 4.827876e-16, w: 0.997689}
+  m_LocalRotation: {x: 0.06794629, y: 0.000000029733446, z: -0.000000002024957, w: 0.997689}
   m_LocalPosition: {x: 0, y: 1.3, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -588,3 +589,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1909556088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909556085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff4c01e4151f0364788b88f4102ae6fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
