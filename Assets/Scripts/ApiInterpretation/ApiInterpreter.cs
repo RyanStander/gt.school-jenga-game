@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ApiInterpretation
@@ -9,10 +11,10 @@ namespace ApiInterpretation
         private const int QuoteModifier = 3;
         private const int ColonModifier = 1;
 
-        public List<Standard> SixthGradeStandards { get; } = new();
-        public List<Standard> SeventhGradeStandards { get; } = new();
-        public List<Standard> EighthGradeStandards { get; } = new();
-        public List<Standard> AlgebraStandards { get; } = new();
+        public List<Standard> SixthGradeStandards = new();
+        public List<Standard> SeventhGradeStandards = new();
+        public List<Standard> EighthGradeStandards = new();
+        public List<Standard> AlgebraStandards = new();
 
         /// <summary>
         /// Returns a list of standards from the API text file in resources.
@@ -71,6 +73,23 @@ namespace ApiInterpretation
                     AlgebraStandards.Add(standard);
                 }
             }
+
+            SixthGradeStandards = OrderStandard(SixthGradeStandards);
+            SeventhGradeStandards = OrderStandard(SeventhGradeStandards);
+            EighthGradeStandards = OrderStandard(EighthGradeStandards);
+            AlgebraStandards = OrderStandard(AlgebraStandards);
+        }
+
+        //Order a standard by domain name ascending then by cluster name ascending then by standard id ascending
+        private List<Standard> OrderStandard(IEnumerable<Standard> standards)
+        {
+            List<Standard> orderedStandards =
+                //Order by domain name ascending If the domain names are the same, order by cluster name ascending If the cluster names are the same, order by standard id ascending
+                standards.OrderBy(standard => standard.DomainName)
+                    .ThenBy(standard => standard.ClusterDescription)
+                    .ThenBy(standard => standard.StandardId).ToList();
+
+            return orderedStandards;
         }
     }
 }
