@@ -30,6 +30,9 @@ namespace Jenga
         private float currentJengaTowerPoint;
 
         private List<GameObject> _jengaTowers = new();
+        public List<JengaBlockData> SixthGradeJengaBlockDatas { get; private set; } = new();
+        public List<JengaBlockData> SeventhGradeJengaBlockDatas { get; private set; } = new();
+        public List<JengaBlockData> EighthGradeJengaBlockDatas { get; private set; } = new();
 
         private void OnValidate()
         {
@@ -49,7 +52,7 @@ namespace Jenga
             CreateJengaTower(apiInterpreter.SeventhGradeStandards);
 
             CreateJengaTower(apiInterpreter.EighthGradeStandards);
-            
+
             _camera.Follow = _jengaTowers[1].transform;
             _camera.LookAt = _jengaTowers[1].transform;
         }
@@ -80,9 +83,10 @@ namespace Jenga
             };
 
             _jengaTowers.Add(jengaTower);
-            
+
             _jengaTowerFocusControlls.CreateJengaTowerButton(jengaTower, standards[0].Grade, _camera);
 
+            List<JengaBlockData> tempJengaBlockDatas = new List<JengaBlockData>();
             while (standardsQueue.Count > 1)
             {
                 //create a new jengaSet as a child of the jengaTower
@@ -103,24 +107,26 @@ namespace Jenga
                 var zPos = -_JengaSetZPoint;
                 for (int i = 0; i < 3; i++)
                 {
+                    if (standardsQueue.Count == 0)
+                    {
+                        continue;
+                    }
+
                     var standard = standardsQueue.Dequeue();
                     GameObject jengaBlock;
                     switch (standard.Mastery)
                     {
                         case 0:
                             jengaBlock = Instantiate(_jengaBlockGlass, jengaSet.transform);
-                            jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
-                            jengaBlock.AddComponent<JengaBlockData>().SetStandard(standard);
+                            SetJengaBlockData(jengaBlock, standard, zPos,tempJengaBlockDatas);
                             break;
                         case 1:
                             jengaBlock = Instantiate(_jengaBlockWood, jengaSet.transform);
-                            jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
-                            jengaBlock.AddComponent<JengaBlockData>().SetStandard(standard);
+                            SetJengaBlockData(jengaBlock, standard, zPos,tempJengaBlockDatas);
                             break;
                         case 2:
                             jengaBlock = Instantiate(_jengaBlockStone, jengaSet.transform);
-                            jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
-                            jengaBlock.AddComponent<JengaBlockData>().SetStandard(standard);
+                            SetJengaBlockData(jengaBlock, standard, zPos,tempJengaBlockDatas);
                             break;
                     }
 
@@ -132,6 +138,31 @@ namespace Jenga
             currentJengaSetRotation = 0;
 
             currentJengaTowerPoint += _newJengaTowerPoint;
+
+            if (standards[0].Grade.Contains("6"))
+            {
+                SixthGradeJengaBlockDatas = tempJengaBlockDatas;
+            }
+            else if (standards[0].Grade.Contains("7"))
+            {
+                SeventhGradeJengaBlockDatas = tempJengaBlockDatas;
+            }
+            else if (standards[0].Grade.Contains("8"))
+            {
+                EighthGradeJengaBlockDatas = tempJengaBlockDatas;
+            }
+        }
+
+        private void SetJengaBlockData(GameObject jengaBlock, Standard standard, float zPos, List<JengaBlockData> jengaBlockDatas)
+        {
+            jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
+            JengaBlockData jengaBlockData = jengaBlock.AddComponent<JengaBlockData>();
+
+            Rigidbody jengaRigidbody = jengaBlock.AddComponent<Rigidbody>();
+            jengaRigidbody.isKinematic = true;
+            jengaBlockData.SetData(standard,jengaRigidbody);
+
+            jengaBlockDatas.Add(jengaBlockData);
         }
     }
 }
