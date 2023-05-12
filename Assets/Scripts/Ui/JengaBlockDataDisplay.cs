@@ -6,15 +6,21 @@ namespace Ui
 {
     public class JengaBlockDataDisplay : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI informationText;
+        [SerializeField] private TextMeshProUGUI _informationText;
+        [SerializeField] private Camera _camera;
+
+        private void OnValidate()
+        {
+            if (_camera == null)
+                _camera = Camera.main;
+        }
 
         private void FixedUpdate()
         {
-            //When the user right clicks on a block, the block displays data
             if (Input.GetMouseButtonDown(1))
             {
-                //Get the block that the user clicked on
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var ray = _camera.ScreenPointToRay(Input.mousePosition);
+                
                 if (Physics.Raycast(ray, out var hit))
                 {
                     //Get the block's data
@@ -22,11 +28,11 @@ namespace Ui
                     if (jengaBlockData != null)
                     {
                         //Display the block's data
-                        informationText.text = jengaBlockData.Standard.Grade + ": " +
-                                               jengaBlockData.Standard.DomainName + "\n" +
-                                               jengaBlockData.Standard.ClusterDescription + "\n" +
-                                               jengaBlockData.Standard.StandardId + ": " +
-                                               jengaBlockData.Standard.StandardDescription;
+                        _informationText.text = jengaBlockData.Standard.Grade + ": " +
+                                                jengaBlockData.Standard.DomainName + "\n" +
+                                                jengaBlockData.Standard.ClusterDescription + "\n" +
+                                                jengaBlockData.Standard.StandardId + ": " +
+                                                jengaBlockData.Standard.StandardDescription;
                     }
                 }
             }

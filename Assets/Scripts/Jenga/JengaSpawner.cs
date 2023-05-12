@@ -9,6 +9,8 @@ namespace Jenga
 {
     public class JengaSpawner : MonoBehaviour
     {
+        #region Serialized Fields
+
         [SerializeField] private CinemachineVirtualCamera _camera;
         [SerializeField] private JengaTowerFocusControlls _jengaTowerFocusControlls;
 
@@ -24,15 +26,26 @@ namespace Jenga
         [SerializeField] private float _helveticaZOffset = -2;
         [SerializeField] private float _helveticaScale = 0.02f;
 
+        #endregion
+
+        #region Private Fields
 
         private float currentJengaSetHeight;
         private float currentJengaSetRotation;
         private float currentJengaTowerPoint;
 
         private List<GameObject> _jengaTowers = new();
+
+        #endregion
+
+        #region Public Properties
+
         public List<JengaBlockData> SixthGradeJengaBlockDatas { get; private set; } = new();
         public List<JengaBlockData> SeventhGradeJengaBlockDatas { get; private set; } = new();
         public List<JengaBlockData> EighthGradeJengaBlockDatas { get; private set; } = new();
+
+        #endregion
+
 
         private void OnValidate()
         {
@@ -47,17 +60,17 @@ namespace Jenga
 
             currentJengaTowerPoint = -_newJengaTowerPoint;
 
-            CreateJengaTower(apiInterpreter.SixthGradeStandards);
+            CreateJenga(apiInterpreter.SixthGradeStandards);
 
-            CreateJengaTower(apiInterpreter.SeventhGradeStandards);
+            CreateJenga(apiInterpreter.SeventhGradeStandards);
 
-            CreateJengaTower(apiInterpreter.EighthGradeStandards);
+            CreateJenga(apiInterpreter.EighthGradeStandards);
 
             _camera.Follow = _jengaTowers[1].transform;
             _camera.LookAt = _jengaTowers[1].transform;
         }
 
-        private void CreateJengaTower(List<Standard> standards)
+        private void CreateJenga(List<Standard> standards)
         {
             //enqueue the standards
             Queue<Standard> standardsQueue = new Queue<Standard>();
@@ -66,22 +79,7 @@ namespace Jenga
                 standardsQueue.Enqueue(standard);
             }
 
-            GameObject helveticaText = Instantiate(_helveticaTextPrefab);
-            helveticaText.transform.position =
-                new Vector3(currentJengaTowerPoint + _helveticaXOffset, 0, _helveticaZOffset);
-            helveticaText.transform.localScale *= _helveticaScale;
-            var text = helveticaText.GetComponent<SimpleHelvetica>();
-            text.Text = standards[0].Grade;
-            text.GenerateText();
-
-            GameObject jengaTower = new GameObject(standards[0].Grade + " Jenga Tower")
-            {
-                transform =
-                {
-                    position = new Vector3(currentJengaTowerPoint, 0, 0),
-                }
-            };
-
+            GameObject jengaTower = CreateJengaTower(standards[0]);
             _jengaTowers.Add(jengaTower);
 
             _jengaTowerFocusControlls.CreateJengaTowerButton(jengaTower, standards[0].Grade, _camera);
@@ -89,18 +87,8 @@ namespace Jenga
             List<JengaBlockData> tempJengaBlockDatas = new List<JengaBlockData>();
             while (standardsQueue.Count > 1)
             {
-                //create a new jengaSet as a child of the jengaTower
-                GameObject jengaSet = new GameObject("Jenga Set")
-                {
-                    transform =
-                    {
-                        parent = jengaTower.transform,
-                        localPosition = new Vector3(0, currentJengaSetHeight, 0),
-                        rotation = Quaternion.Euler(0, currentJengaSetRotation, 0)
-                    }
-                };
+                GameObject jengaSet = CreateJengaSet(jengaTower);
 
-                //set the parent of the jengaSet to the jengaTower
                 currentJengaSetHeight += _newJengaSetHeight;
                 currentJengaSetRotation += 90;
 
@@ -113,22 +101,8 @@ namespace Jenga
                     }
 
                     var standard = standardsQueue.Dequeue();
-                    GameObject jengaBlock;
-                    switch (standard.Mastery)
-                    {
-                        case 0:
-                            jengaBlock = Instantiate(_jengaBlockGlass, jengaSet.transform);
-                            SetJengaBlockData(jengaBlock, standard, zPos,tempJengaBlockDatas);
-                            break;
-                        case 1:
-                            jengaBlock = Instantiate(_jengaBlockWood, jengaSet.transform);
-                            SetJengaBlockData(jengaBlock, standard, zPos,tempJengaBlockDatas);
-                            break;
-                        case 2:
-                            jengaBlock = Instantiate(_jengaBlockStone, jengaSet.transform);
-                            SetJengaBlockData(jengaBlock, standard, zPos,tempJengaBlockDatas);
-                            break;
-                    }
+
+                    CreateJengaBlock(standard, jengaSet, zPos, tempJengaBlockDatas);
 
                     zPos += _JengaSetZPoint;
                 }
@@ -139,28 +113,91 @@ namespace Jenga
 
             currentJengaTowerPoint += _newJengaTowerPoint;
 
-            if (standards[0].Grade.Contains("6"))
+            SetToGradeJengaBlockData(standards[0], tempJengaBlockDatas);
+        }
+
+        private GameObject CreateJengaTower(Standard standard)
+        {
+            GameObject helveticaText = Instantiate(_helveticaTextPrefab);
+            helveticaText.transform.position =
+                new Vector3(currentJengaTowerPoint + _helveticaXOffset, 0, _helveticaZOffset);
+            helveticaText.transform.localScale *= _helveticaScale;
+            var text = helveticaText.GetComponent<SimpleHelvetica>();
+            text.Text = standard.Grade;
+            text.GenerateText();
+
+            GameObject jengaTower = new GameObject(standard.Grade + " Jenga Tower")
+            {
+                transform =
+                {
+                    position = new Vector3(currentJengaTowerPoint, 0, 0),
+                }
+            };
+
+            return jengaTower;
+        }
+
+        private GameObject CreateJengaSet(GameObject jengaTower)
+        {
+            GameObject jengaSet = new GameObject("Jenga Set")
+            {
+                transform =
+                {
+                    parent = jengaTower.transform,
+                    localPosition = new Vector3(0, currentJengaSetHeight, 0),
+                    rotation = Quaternion.Euler(0, currentJengaSetRotation, 0)
+                }
+            };
+
+            return jengaSet;
+        }
+
+        private void CreateJengaBlock(Standard standard, GameObject jengaSet, float zPos,
+            List<JengaBlockData> tempJengaBlockDatas)
+        {
+            GameObject jengaBlock;
+            switch (standard.Mastery)
+            {
+                case 0:
+                    jengaBlock = Instantiate(_jengaBlockGlass, jengaSet.transform);
+                    SetJengaBlockData(jengaBlock, standard, zPos, tempJengaBlockDatas);
+                    break;
+                case 1:
+                    jengaBlock = Instantiate(_jengaBlockWood, jengaSet.transform);
+                    SetJengaBlockData(jengaBlock, standard, zPos, tempJengaBlockDatas);
+                    break;
+                case 2:
+                    jengaBlock = Instantiate(_jengaBlockStone, jengaSet.transform);
+                    SetJengaBlockData(jengaBlock, standard, zPos, tempJengaBlockDatas);
+                    break;
+            }
+        }
+
+        private void SetToGradeJengaBlockData(Standard standard, List<JengaBlockData> tempJengaBlockDatas)
+        {
+            if (standard.Grade.Contains("6"))
             {
                 SixthGradeJengaBlockDatas = tempJengaBlockDatas;
             }
-            else if (standards[0].Grade.Contains("7"))
+            else if (standard.Grade.Contains("7"))
             {
                 SeventhGradeJengaBlockDatas = tempJengaBlockDatas;
             }
-            else if (standards[0].Grade.Contains("8"))
+            else if (standard.Grade.Contains("8"))
             {
                 EighthGradeJengaBlockDatas = tempJengaBlockDatas;
             }
         }
 
-        private void SetJengaBlockData(GameObject jengaBlock, Standard standard, float zPos, List<JengaBlockData> jengaBlockDatas)
+        private void SetJengaBlockData(GameObject jengaBlock, Standard standard, float zPos,
+            List<JengaBlockData> jengaBlockDatas)
         {
             jengaBlock.transform.localPosition = new Vector3(0, 0, zPos);
             JengaBlockData jengaBlockData = jengaBlock.AddComponent<JengaBlockData>();
 
             Rigidbody jengaRigidbody = jengaBlock.AddComponent<Rigidbody>();
             jengaRigidbody.isKinematic = true;
-            jengaBlockData.SetData(standard,jengaRigidbody);
+            jengaBlockData.SetData(standard, jengaRigidbody);
 
             jengaBlockDatas.Add(jengaBlockData);
         }
